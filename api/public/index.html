@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mongo DB</title>
+    <style>
+        .result{
+            width: 500px;
+            height: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .result img{
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <label>Name</label>
+        <input type="text" id="name">
+        <label>Phone</label>
+        <input type="text" id="phone">
+        <label>Upload your Profile</label>
+        <input type="file" id="image">
+        <input type="submit" value="submit" id="btn_submit">
+    </form>
+
+    <div class="result">
+
+    </div>
+</body>
+</html>
+
+<script>
+    document.getElementById('btn_submit').addEventListener('click', (event)=>{
+        event.preventDefault()
+
+        var name = document.getElementById('name').value
+        var phone = document.getElementById('phone').value
+
+        const formData = new FormData()
+        var image = document.getElementById('image')
+        formData.append('image', image.files[0]) 
+        formData.append('name', name)
+        formData.append('phone', phone)
+        fetch('/pushData', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => alert(data.msg))
+        .catch(err => alert(err))
+    })
+
+    fetch('/fetchData')
+    .then(res => res.json())
+    .then(data =>{
+        const result = document.querySelector('.result');
+
+        result.innerHTML = ''
+
+        data.forEach(user => {
+            result.innerHTML += `
+            <p>Name: ${user.name}</p>
+            <p>Phone: ${user.phone}</p>
+            <img src="${user.url}" />
+            `;
+        });
+    })
+</script>
